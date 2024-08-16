@@ -32,12 +32,26 @@ async function run() {
 
         app.get('/products', async (req, res) => {
             const search = req.query.search;
+            const size = parseInt(req.query.size);
+            const page = parseInt(req.query.page);
             let query = {};
             if (search) {
                 query.productName = { $regex: search, $options: 'i' }
             }
-            const result = await productsCollection.find(query).toArray();
+            const skip = (page -1) * size
+            const result = await productsCollection.find(query).skip(skip).limit(size).toArray();
             res.send(result)
+        })
+
+        // // total products
+        app.get('/products-total', async (req, res) => {
+            const search = req.query.search;
+            let query = {};
+            if (search) {
+                query.productName = { $regex: search, $options: 'i' }
+            }
+            const result = await productsCollection.countDocuments(query);
+            res.send({count: result})
         })
 
         // console.log("Pinged your deployment. You successfully connected to MongoDB!");
