@@ -34,14 +34,27 @@ async function run() {
             const search = req.query.search;
             const sortOption = req.query.sort;
             const category = req.query.category;
+            const brandName = req.query.brandName;
             const size = parseInt(req.query.size);
             const page = parseInt(req.query.page);
+            const minPrice = req.query.minPrice;
+            const maxPrice = req.query.maxPrice;
             let query = {};
+            console.log(minPrice)
+            // Filtering based on price range
+            if (minPrice || maxPrice) {
+                query.price = {};
+                if (minPrice) query.price.$gte = Number(minPrice);
+                if (maxPrice) query.price.$lte = Number(maxPrice);
+            }
             if (search) {
                 query.productName = { $regex: search, $options: 'i' }
             }
             if (category) {
                 query.category = category
+            }
+            if (brandName) {
+                query.brandName = brandName
             }
             let sort = {};
             if (sortOption === 'price-asc') {
