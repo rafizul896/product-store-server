@@ -33,11 +33,15 @@ async function run() {
         app.get('/products', async (req, res) => {
             const search = req.query.search;
             const sortOption = req.query.sort;
+            const category = req.query.category;
             const size = parseInt(req.query.size);
             const page = parseInt(req.query.page);
             let query = {};
             if (search) {
                 query.productName = { $regex: search, $options: 'i' }
+            }
+            if (category) {
+                query.category = category
             }
             let sort = {};
             if (sortOption === 'price-asc') {
@@ -55,9 +59,13 @@ async function run() {
         // // total products
         app.get('/products-total', async (req, res) => {
             const search = req.query.search;
+            const category = req.query.category;
             let query = {};
             if (search) {
                 query.productName = { $regex: search, $options: 'i' }
+            }
+            if (category) {
+                query.category = category
             }
             const result = await productsCollection.countDocuments(query);
             res.send({ count: result })
