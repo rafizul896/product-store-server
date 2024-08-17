@@ -9,10 +9,11 @@ app.use(express.json());
 app.use(cors({
     origin: [
         'http://localhost:5173',
+        'https://product-store-80165.web.app',
+        'https://product-store-80165.firebaseapp.com'
     ],
     credentials: true
 }));
-
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.USER_DB}:${process.env.USER_PASS}@cluster0.y7qmkns.mongodb.net/?retryWrites=true&w=majority&appName=cluster0`;
@@ -40,7 +41,6 @@ async function run() {
             const minPrice = req.query.minPrice;
             const maxPrice = req.query.maxPrice;
             let query = {};
-            console.log(minPrice)
             // Filtering based on price range
             if (minPrice || maxPrice) {
                 query.price = {};
@@ -73,12 +73,24 @@ async function run() {
         app.get('/products-total', async (req, res) => {
             const search = req.query.search;
             const category = req.query.category;
+            const brandName = req.query.brandName;
+            const minPrice = req.query.minPrice;
+            const maxPrice = req.query.maxPrice;
             let query = {};
+             // Filtering based on price range
+             if (minPrice || maxPrice) {
+                query.price = {};
+                if (minPrice) query.price.$gte = Number(minPrice);
+                if (maxPrice) query.price.$lte = Number(maxPrice);
+            }
             if (search) {
                 query.productName = { $regex: search, $options: 'i' }
             }
             if (category) {
                 query.category = category
+            }
+            if (brandName) {
+                query.brandName = brandName
             }
             const result = await productsCollection.countDocuments(query);
             res.send({ count: result })
