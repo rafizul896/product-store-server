@@ -8,5 +8,5 @@
     * Environment variables: Specify any required environment variables and their purposes.
     * Configuration files: Mention any configuration files and their locations.
 ## Running the Project
-    npm start
+    nodemon index.js
 Access the application: Provide instructions on how to access the running application (e.g., localhost:3000).
